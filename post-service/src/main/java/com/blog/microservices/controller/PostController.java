@@ -11,11 +11,11 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/post")
+@RequestMapping("/api/v1/posts")
 public class PostController {
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping("/post")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createPost(@Valid @RequestBody PostDto postDto) {
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
@@ -27,19 +27,19 @@ public class PostController {
         return ResponseEntity.ok(postService.getAllPosts());
     }
 
-    @GetMapping("/{postId}")
+    @GetMapping("/post/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> getPostById(@PathVariable("postId") Long postId) {
         return ResponseEntity.ok(postService.getPostById(postId));
     }
 
-    @PutMapping("/{postId}")
+    @PutMapping("/post/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> updatePost(@PathVariable("postId") Long postId, @Valid @RequestBody PostDto postDto) {
         return ResponseEntity.ok(postService.updatePost(postId, postDto));
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/post/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> deletePost(@PathVariable("postId") Long postId) {
         return ResponseEntity.ok(postService.deletePost(postId));

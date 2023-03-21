@@ -18,9 +18,4 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException) {
         return new ResponseEntity<>(methodArgumentNotValidException.getMessage(), HttpStatus.BAD_GATEWAY);
     }
-
-    @ExceptionHandler(value = CommentException.class)
-    public ResponseEntity<?> handleCommentException(CommentException commentException) {
-        return new ResponseEntity<>(commentException.getMessage(), HttpStatus.BAD_REQUEST);
-    }
 }
