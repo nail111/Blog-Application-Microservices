@@ -1,10 +1,11 @@
 package com.blog.microservices.service;
 
 import com.blog.microservices.dto.CommentDto;
+import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.exception.CommentException;
 import com.blog.microservices.exception.PostException;
 import com.blog.microservices.model.Comment;
 import com.blog.microservices.repository.CommentRepository;
-import com.blog.microservices.utility.PostDto;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class CommentService {
                 .build();
     }
 
-    public CommentDto createComment(Long postId, CommentDto commentDto) {
+    private PostDto getPost(Long postId) {
         log.info("getting post with id: {}", postId);
         PostDto postDto = null;
 
@@ -44,6 +45,11 @@ public class CommentService {
         } catch (FeignException feignException) {
             throw new PostException("Post with id: " + postId + " is not found");
         }
+        return postDto;
+    }
+
+    public CommentDto createComment(Long postId, CommentDto commentDto) {
+        getPost(postId);
 
         Comment comment = mapToComment(commentDto);
         comment.setPostId(postId);
@@ -51,6 +57,20 @@ public class CommentService {
         log.info("saving comment: {}", comment);
         commentRepository.save(comment);
         log.info("comment: {} is saved", comment);
+        return mapToCommentDto(comment);
+    }
+
+    public CommentDto getCommentById(Long postId, Long commentId) {
+        PostDto postDto = getPost(postId);
+
+        Comment comment = commentRepository
+                .findById(commentId)
+                .orElseThrow(() -> new CommentException("Comment with id: " + commentId + " is not found"));
+
+        if (postDto.getId() != comment.getPostId()) {
+            throw new CommentException("Comment with id: " + commentId + " doesn't belong to post with id: " + postId);
+        }
+
         return mapToCommentDto(comment);
     }
 }

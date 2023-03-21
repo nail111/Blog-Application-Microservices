@@ -1,4 +1,4 @@
-package com.blog.microservices.utility;
+package com.blog.microservices.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
