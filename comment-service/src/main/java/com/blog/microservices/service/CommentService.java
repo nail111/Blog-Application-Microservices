@@ -7,12 +7,17 @@ import com.blog.microservices.exception.PostException;
 import com.blog.microservices.model.Comment;
 import com.blog.microservices.repository.CommentRepository;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -111,7 +116,10 @@ public class CommentService {
         return mapToCommentDto(comment);
     }
 
-    public String deleteComment(Long postId, Long commentId) {
+    @CircuitBreaker(name = "comment", fallbackMethod = "fallbackMethod")
+    @TimeLimiter(name = "comment", fallbackMethod = "fallbackMethod")
+    @Retry(name = "comment", fallbackMethod = "fallbackMethod")
+    public CompletableFuture<String> deleteComment(Long postId, Long commentId) {
 
         PostDto postDto = webClient.get()
                 .uri("http://localhost:8765/api/v1/posts/post/" + postId)
@@ -127,6 +135,10 @@ public class CommentService {
         commentRepository.deleteById(commentId);
         log.info("comment with id: {} is deleted", commentId);
 
-        return "Comment " + comment + " is deleted";
+        return CompletableFuture.supplyAsync(() -> "Comment " + comment + " is deleted");
+    }
+
+    public CompletableFuture<String> fallbackMethod(RuntimeException runtimeException) {
+        return CompletableFuture.supplyAsync(() -> "Oops! Something went wrong! Please try again later");
     }
 }
