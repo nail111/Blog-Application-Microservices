@@ -9,7 +9,9 @@ import com.blog.microservices.repository.CommentRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final FeignClientService feignClientService;
+
+    private final RestTemplate restTemplate;
 
     private Comment mapToComment(CommentDto commentDto) {
         return Comment.builder()
@@ -84,7 +88,10 @@ public class CommentService {
     }
 
     public CommentDto updateComment(Long postId, Long commentId, CommentDto commentDto) {
-        PostDto postDto = getPost(postId);
+        ResponseEntity<PostDto> responseEntity = restTemplate
+                .getForEntity("http://localhost:8765/api/v1/posts/post/" + postId, PostDto.class);
+
+        PostDto postDto = responseEntity.getBody();
 
         Comment comment = getComment(commentId);
 
