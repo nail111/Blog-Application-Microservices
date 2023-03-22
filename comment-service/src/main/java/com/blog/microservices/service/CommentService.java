@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @Slf4j
@@ -21,6 +22,8 @@ public class CommentService {
     private final FeignClientService feignClientService;
 
     private final RestTemplate restTemplate;
+
+    private final WebClient webClient;
 
     private Comment mapToComment(CommentDto commentDto) {
         return Comment.builder()
@@ -109,7 +112,12 @@ public class CommentService {
     }
 
     public String deleteComment(Long postId, Long commentId) {
-        PostDto postDto = getPost(postId);
+
+        PostDto postDto = webClient.get()
+                .uri("http://localhost:8765/api/v1/posts/post/" + postId)
+                .retrieve()
+                .bodyToMono(PostDto.class)
+                .block();
 
         Comment comment = getComment(commentId);
 
