@@ -6,6 +6,8 @@ import com.blog.microservices.model.Post;
 import com.blog.microservices.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PostService {
     private final PostRepository postRepository;
+
+    private final RabbitTemplate rabbitTemplate;
+
+    @Value("${spring.rabbitmq.exchange}")
+    private String exchange;
+    @Value("${spring.rabbitmq.routing.key}")
+    private String routingKey;
 
     private Post mapToPost(PostDto postDto) {
         return Post.builder()
@@ -55,6 +64,10 @@ public class PostService {
 
     public PostDto getPostById(Long postId) {
         Post post = getPost(postId);
+
+        log.info("Sending post: {} to the queue...", post);
+        rabbitTemplate.convertAndSend(exchange, routingKey, mapToPostDto(post));
+        log.info("Post: {} has been sent to the queue", post);
 
         return mapToPostDto(post);
     }

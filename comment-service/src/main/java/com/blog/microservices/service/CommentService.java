@@ -12,6 +12,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -140,5 +141,10 @@ public class CommentService {
 
     public CompletableFuture<String> fallbackMethod(RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> "Oops! Something went wrong! Please try again later");
+    }
+
+    @RabbitListener(queues = {"${spring.rabbitmq.queue}"})
+    public void consume(PostDto postDto) {
+        log.info("Post received from queue: {}", postDto);
     }
 }
