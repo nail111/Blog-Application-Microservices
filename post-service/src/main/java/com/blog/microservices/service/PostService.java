@@ -17,9 +17,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class PostService {
-    private final PostRepository postRepository;
 
-    private final RabbitTemplate rabbitTemplate;
+    private PostRepository postRepository;
+
+    private RabbitTemplate rabbitTemplate;
+
+    public PostService(PostRepository postRepository, RabbitTemplate rabbitTemplate) {
+        this.postRepository = postRepository;
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
@@ -49,7 +55,9 @@ public class PostService {
         log.info("post {} created", post.getTitle());
         log.info("saving post {}...", post.getTitle());
         postRepository.save(post);
-        log.info("post {} saved", post.getTitle());
+
+        post.setId(postDto.getId());
+        log.info("post {} saved with id {}", post.getTitle(), post.getId());
         return mapToPostDto(post);
     }
 
