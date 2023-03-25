@@ -17,14 +17,14 @@ import org.springframework.web.util.NestedServletException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.hamcrest.Matchers.hasSize;
 
 @ExtendWith(MockitoExtension.class)
 public class PostControllerTest {
@@ -85,6 +85,24 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$[0].content", is("content 1")))
                 .andExpect(jsonPath("$[1].title", is("title 2")))
                 .andExpect(jsonPath("$[1].content", is("content 2")))
+                .andDo(print());
+    }
+
+    @Test
+    public void getPostByIdTest() throws Exception {
+        // Given
+        Long postId = 1L;
+        PostDto postDto = new PostDto(1L, "title 1", "description 1", "content 1");
+
+        // When
+        when(postService.getPostById(postId)).thenReturn(postDto);
+
+        // Then
+        mockMvc.perform(get("/api/v1/posts/post/" + postId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is("title 1")))
+                .andExpect(jsonPath("$.content", is("content 1")))
                 .andDo(print());
     }
 
