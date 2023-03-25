@@ -1,6 +1,7 @@
 package com.blog.microservices.controller;
 
 import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.model.Post;
 import com.blog.microservices.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,12 +20,11 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PostControllerTest {
@@ -104,6 +104,48 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.title", is("title 1")))
                 .andExpect(jsonPath("$.content", is("content 1")))
                 .andDo(print());
+    }
+
+    @Test
+    public void updatePostTest() throws Exception {
+        // Given
+        Long postId = 1L;
+        PostDto postDto = new PostDto(1L, "title 1", "description 1", "content 1");
+        PostDto updatedPostDto = new PostDto(1L, "title 1 updated", "description 1 updated", "content 1 updated");
+
+        // When
+        when(postService.updatePost(postId, postDto)).thenReturn(updatedPostDto);
+
+        // Then
+        mockMvc.perform(put("/api/v1/posts/post/" + postId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is("title 1 updated")))
+                .andExpect(jsonPath("$.content", is("content 1 updated")))
+                .andExpect(jsonPath("$.description", is("description 1 updated")))
+                .andExpect(jsonPath("$.id", is(1)))
+                .andDo(print());
+    }
+
+    @Test
+    public void deletePostTest() throws Exception {
+        // Given
+        Long postId = 1L;
+        Post post = new Post(1L, "title 1", "description 1", "content 1");
+        String expectedMessage = "Post title 1 is deleted";
+
+        // When
+        when(postService.deletePost(postId)).thenReturn("Post " + post.getTitle() + " is deleted");
+
+        // Then
+        mockMvc.perform(delete("/api/v1/posts/post/" + postId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(expectedMessage))
+                .andDo(print());
+
+        verify(postService, times(1)).deletePost(eq(postId));
     }
 
     private static String asJsonString(final Object obj) throws NestedServletException {
