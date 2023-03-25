@@ -14,12 +14,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.hamcrest.Matchers.hasSize;
 
 @ExtendWith(MockitoExtension.class)
 public class PostControllerTest {
@@ -57,6 +62,29 @@ public class PostControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title", is(postDto.getTitle())))
                 .andExpect(jsonPath("$.content", is(postDto.getContent())))
+                .andDo(print());
+    }
+
+    @Test
+    public void getAllPostsTest() throws Exception {
+        // Given
+        List<PostDto> posts = Arrays.asList(
+                new PostDto(1L, "title 1", "description 1", "content 1"),
+                new PostDto(2L, "title 2", "description 2", "content 2")
+        );
+
+        // When
+        when(postService.getAllPosts()).thenReturn(posts);
+
+        // Then
+        mockMvc.perform(get("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].title", is("title 1")))
+                .andExpect(jsonPath("$[0].content", is("content 1")))
+                .andExpect(jsonPath("$[1].title", is("title 2")))
+                .andExpect(jsonPath("$[1].content", is("content 2")))
                 .andDo(print());
     }
 
