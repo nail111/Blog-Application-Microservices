@@ -1,6 +1,7 @@
 package com.blog.microservices.service;
 
 import com.blog.microservices.dto.CommentDto;
+import com.blog.microservices.dto.CommentDtoResponse;
 import com.blog.microservices.dto.PostDto;
 import com.blog.microservices.exception.CommentException;
 import com.blog.microservices.exception.PostException;
@@ -39,8 +40,8 @@ public class CommentService {
                 .build();
     }
 
-    private CommentDto mapToCommentDto(Comment comment) {
-        return CommentDto.builder()
+    private CommentDtoResponse mapToCommentDtoResponse(Comment comment) {
+        return CommentDtoResponse.builder()
                 .id(comment.getId())
                 .name(comment.getName())
                 .email(comment.getEmail())
@@ -48,7 +49,7 @@ public class CommentService {
                 .build();
     }
 
-    private PostDto getPost(Long postId) {
+    public PostDto getPost(Long postId) {
         log.info("getting post with id: {}", postId);
         PostDto postDto = null;
 
@@ -74,7 +75,7 @@ public class CommentService {
         }
     }
 
-    public CommentDto createComment(Long postId, CommentDto commentDto) {
+    public CommentDtoResponse createComment(Long postId, CommentDto commentDto) {
         getPost(postId);
 
         Comment comment = mapToComment(commentDto);
@@ -83,20 +84,20 @@ public class CommentService {
         log.info("saving comment: {}", comment);
         commentRepository.save(comment);
         log.info("comment: {} is saved", comment);
-        return mapToCommentDto(comment);
+        return mapToCommentDtoResponse(comment);
     }
 
-    public CommentDto getCommentById(Long postId, Long commentId) {
+    public CommentDtoResponse getCommentById(Long postId, Long commentId) {
         PostDto postDto = getPost(postId);
 
         Comment comment = getComment(commentId);
 
         checkIfCommentBelongsToThePost(postId, commentId, postDto, comment);
 
-        return mapToCommentDto(comment);
+        return mapToCommentDtoResponse(comment);
     }
 
-    public CommentDto updateComment(Long postId, Long commentId, CommentDto commentDto) {
+    public CommentDtoResponse updateComment(Long postId, Long commentId, CommentDto commentDto) {
         ResponseEntity<PostDto> responseEntity = restTemplate
                 .getForEntity("http://localhost:8765/api/v1/posts/post/" + postId, PostDto.class);
 
@@ -114,7 +115,7 @@ public class CommentService {
         commentRepository.save(comment);
         log.info("comment with id: {} is saved", commentId);
 
-        return mapToCommentDto(comment);
+        return mapToCommentDtoResponse(comment);
     }
 
     @CircuitBreaker(name = "comment", fallbackMethod = "fallbackMethod")

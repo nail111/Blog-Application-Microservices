@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_02bobiq" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.1.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.1.0">
+  <bpmn:process id="commentById" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0er5owd</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0er5owd" sourceRef="StartEvent_1" targetRef="Activity_1u6m8sa" />
+    <bpmn:endEvent id="Event_0srofuh">
+      <bpmn:incoming>Flow_1ivi0v8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ivi0v8" sourceRef="Activity_15y217y" targetRef="Event_0srofuh" />
+    <bpmn:serviceTask id="Activity_15y217y" name="Create Comment&#10;&#10;" camunda:delegateExpression="${createCommentDelegate}">
+      <bpmn:incoming>Flow_0iod221</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ivi0v8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0iod221" sourceRef="Activity_1u6m8sa" targetRef="Activity_15y217y" />
+    <bpmn:serviceTask id="Activity_1u6m8sa" name="Get Post By Id" camunda:delegateExpression="${getPostByIdDelegate}">
+      <bpmn:incoming>Flow_0er5owd</bpmn:incoming>
+      <bpmn:outgoing>Flow_0iod221</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="commentById">
+      <bpmndi:BPMNEdge id="Flow_1ivi0v8_di" bpmnElement="Flow_1ivi0v8">
+        <di:waypoint x="530" y="117" />
+        <di:waypoint x="612" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0er5owd_di" bpmnElement="Flow_0er5owd">
+        <di:waypoint x="188" y="117" />
+        <di:waypoint x="230" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0iod221_di" bpmnElement="Flow_0iod221">
+        <di:waypoint x="330" y="117" />
+        <di:waypoint x="430" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0srofuh_di" bpmnElement="Event_0srofuh">
+        <dc:Bounds x="612" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_01vtw3d_di" bpmnElement="Activity_15y217y">
+        <dc:Bounds x="430" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1kbkp63_di" bpmnElement="Activity_1u6m8sa">
+        <dc:Bounds x="230" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
