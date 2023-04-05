@@ -62,7 +62,7 @@ public class CommentService {
         return postDto;
     }
 
-    private Comment getComment(Long commentId) {
+    public Comment getComment(Long commentId) {
         Comment comment = commentRepository
                 .findById(commentId)
                 .orElseThrow(() -> new CommentException("Comment with id: " + commentId + " is not found"));

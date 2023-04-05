@@ -39,7 +39,17 @@ public class CommentController {
     @GetMapping("/{postId}/comment/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> getCommentById(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId) {
-        return ResponseEntity.ok(commentService.getCommentById(postId, commentId));
+        ProcessInstanceWithVariables processInstanceWithVariables = runtimeService
+                .createProcessInstanceByKey("getCommentById")
+                .setVariable("postId", postId)
+                .setVariable("commentId", commentId)
+                .executeWithVariablesInReturn();
+
+        VariableMap variableMap = processInstanceWithVariables.getVariables();
+        CommentDtoResponse response = variableMap.getValue("response", CommentDtoResponse.class);
+
+//        return ResponseEntity.ok(commentService.getCommentById(postId, commentId));
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{postId}/comment/{commentId}")
