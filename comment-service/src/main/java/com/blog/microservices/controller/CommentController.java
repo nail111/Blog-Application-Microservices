@@ -25,7 +25,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createComment(@PathVariable("postId") Long postId, @Valid @RequestBody CommentDtoRequest commentDtoRequest) {
         ProcessInstanceWithVariables processInstanceWithVariables = runtimeService
-                .createProcessInstanceByKey("commentById")
+                .createProcessInstanceByKey("createComment")
                 .setVariable("postId", postId)
                 .setVariable("commentDtoRequest", commentDtoRequest)
                 .executeWithVariablesInReturn();

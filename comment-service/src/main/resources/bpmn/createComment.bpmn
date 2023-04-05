@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0zg2fnw" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.1.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.1.0">
+  <bpmn:process id="Process_1p5kjoj" name="Create Comment" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1jptrip</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1jptrip" sourceRef="StartEvent_1" targetRef="Activity_03azu6l" />
+    <bpmn:endEvent id="Event_105ypyq">
+      <bpmn:incoming>Flow_17rl62w</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_17rl62w" sourceRef="Activity_0dmfthf" targetRef="Event_105ypyq" />
+    <bpmn:serviceTask id="Activity_0dmfthf" name="Create Comment" camunda:delegateExpression="${createCommentDelegate}">
+      <bpmn:incoming>Flow_09upnge</bpmn:incoming>
+      <bpmn:outgoing>Flow_17rl62w</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_09upnge" sourceRef="Activity_03azu6l" targetRef="Activity_0dmfthf" />
+    <bpmn:serviceTask id="Activity_03azu6l" name="Get Post By Id" camunda:delegateExpression="${getPostByIdDelegate}">
+      <bpmn:incoming>Flow_1jptrip</bpmn:incoming>
+      <bpmn:outgoing>Flow_09upnge</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1p5kjoj">
+      <bpmndi:BPMNEdge id="Flow_17rl62w_di" bpmnElement="Flow_17rl62w">
+        <di:waypoint x="640" y="117" />
+        <di:waypoint x="722" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jptrip_di" bpmnElement="Flow_1jptrip">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="330" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09upnge_di" bpmnElement="Flow_09upnge">
+        <di:waypoint x="430" y="117" />
+        <di:waypoint x="540" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_105ypyq_di" bpmnElement="Event_105ypyq">
+        <dc:Bounds x="722" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06flppl_di" bpmnElement="Activity_0dmfthf">
+        <dc:Bounds x="540" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1yu57vj_di" bpmnElement="Activity_03azu6l">
+        <dc:Bounds x="330" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
