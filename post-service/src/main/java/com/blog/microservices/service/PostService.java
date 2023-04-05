@@ -4,7 +4,6 @@ import com.blog.microservices.dto.PostDto;
 import com.blog.microservices.exception.PostException;
 import com.blog.microservices.model.Post;
 import com.blog.microservices.repository.PostRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,13 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class PostService {
 
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
 
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     public PostService(PostRepository postRepository, RabbitTemplate rabbitTemplate) {
         this.postRepository = postRepository;
