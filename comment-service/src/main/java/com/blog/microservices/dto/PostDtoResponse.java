@@ -11,7 +11,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostDto implements Serializable {
+public class PostDtoResponse implements Serializable {
     private Long id;
     private String title;
     private String description;

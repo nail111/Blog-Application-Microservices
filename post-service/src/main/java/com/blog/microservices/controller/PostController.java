@@ -1,6 +1,7 @@
 package com.blog.microservices.controller;
 
 import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.dto.PostDtoRequest;
 import com.blog.microservices.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,8 @@ public class PostController {
 
     @PostMapping("/post")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createPost(@Valid @RequestBody PostDto postDto) {
-        return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
+    public ResponseEntity<?> createPost(@Valid @RequestBody PostDtoRequest postDtoRequest) {
+        return new ResponseEntity<>(postService.createPost(postDtoRequest), HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -35,8 +36,8 @@ public class PostController {
 
     @PutMapping("/post/{postId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> updatePost(@PathVariable("postId") Long postId, @Valid @RequestBody PostDto postDto) {
-        return ResponseEntity.ok(postService.updatePost(postId, postDto));
+    public ResponseEntity<?> updatePost(@PathVariable("postId") Long postId, @Valid @RequestBody PostDtoRequest postDtoRequest) {
+        return ResponseEntity.ok(postService.updatePost(postId, postDtoRequest));
     }
 
     @DeleteMapping("/post/{postId}")

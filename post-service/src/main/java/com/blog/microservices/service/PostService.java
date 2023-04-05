@@ -1,6 +1,8 @@
 package com.blog.microservices.service;
 
 import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.dto.PostDtoRequest;
+import com.blog.microservices.dto.PostDtoResponse;
 import com.blog.microservices.exception.PostException;
 import com.blog.microservices.model.Post;
 import com.blog.microservices.repository.PostRepository;
@@ -16,6 +18,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PostService {
 
+    @Value("${spring.rabbitmq.exchange}")
+    private String exchange;
+    @Value("${spring.rabbitmq.routing.key}")
+    private String routingKey;
+
     private final PostRepository postRepository;
 
     private final RabbitTemplate rabbitTemplate;
@@ -25,57 +32,52 @@ public class PostService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @Value("${spring.rabbitmq.exchange}")
-    private String exchange;
-    @Value("${spring.rabbitmq.routing.key}")
-    private String routingKey;
-
-    private Post mapToPost(PostDto postDto) {
-        return Post.builder()
-                .title(postDto.getTitle())
-                .description(postDto.getDescription())
-                .content(postDto.getContent())
-                .build();
+    private Post mapToPost(PostDtoRequest postDtoRequest) {
+        Post post = new Post();
+        post.setTitle(postDtoRequest.getTitle());
+        post.setDescription(postDtoRequest.getDescription());
+        post.setContent(postDtoRequest.getContent());
+        return post;
     }
 
-    private PostDto mapToPostDto(Post post) {
-        return PostDto.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .description(post.getDescription())
-                .content(post.getContent())
-                .build();
+    private PostDtoResponse mapToPostDtoResponse(Post post) {
+        PostDtoResponse postDtoResponse = new PostDtoResponse();
+        postDtoResponse.setId(post.getId());
+        postDtoResponse.setTitle(post.getTitle());
+        postDtoResponse.setDescription(post.getDescription());
+        postDtoResponse.setContent(post.getContent());
+        return postDtoResponse;
     }
 
-    public PostDto createPost(PostDto postDto) {
-        log.info("creating post {}...", postDto.getTitle());
-        Post post = mapToPost(postDto);
+    public PostDtoResponse createPost(PostDtoRequest postDtoRequest) {
+        log.info("creating post {}...", postDtoRequest.getTitle());
+        Post post = mapToPost(postDtoRequest);
         log.info("post {} created", post.getTitle());
         log.info("saving post {}...", post.getTitle());
         postRepository.save(post);
 
-        post.setId(postDto.getId());
+        post.setId(postDtoRequest.getId());
         log.info("post {} saved with id {}", post.getTitle(), post.getId());
-        return mapToPostDto(post);
+        return mapToPostDtoResponse(post);
     }
 
-    public List<PostDto> getAllPosts() {
-        List<PostDto> postDtoList = postRepository
+    public List<PostDtoResponse> getAllPosts() {
+        List<PostDtoResponse> postDtoResponseList = postRepository
                 .findAll()
                 .stream()
-                .map(post -> mapToPostDto(post)).collect(Collectors.toList());
+                .map(post -> mapToPostDtoResponse(post)).collect(Collectors.toList());
 
-        return postDtoList;
+        return postDtoResponseList;
     }
 
-    public PostDto getPostById(Long postId) {
+    public PostDtoResponse getPostById(Long postId) {
         Post post = getPost(postId);
 
         log.info("Sending post: {} to the queue...", post);
-        rabbitTemplate.convertAndSend(exchange, routingKey, mapToPostDto(post));
+        rabbitTemplate.convertAndSend(exchange, routingKey, mapToPostDtoResponse(post));
         log.info("Post: {} has been sent to the queue", post);
 
-        return mapToPostDto(post);
+        return mapToPostDtoResponse(post);
     }
 
     private Post getPost(Long postId) {
@@ -85,22 +87,22 @@ public class PostService {
         return post;
     }
 
-    public PostDto updatePost(Long postId, PostDto postDto) {
+    public PostDtoResponse updatePost(Long postId, PostDtoRequest postDtoRequest) {
         log.info("getting post with id: {}...", postId);
         Post post = getPost(postId);
         log.info("post with id: {} is found", postId);
 
         log.info("update post with id: {}", postId);
-        post.setTitle(postDto.getTitle());
-        post.setDescription(postDto.getDescription());
-        post.setContent(postDto.getContent());
+        post.setTitle(postDtoRequest.getTitle());
+        post.setDescription(postDtoRequest.getDescription());
+        post.setContent(postDtoRequest.getContent());
         log.info("post with id: {} is updated", postId);
 
         log.info("saving post with id: {}", postId);
         postRepository.save(post);
         log.info("post with id: {} is saved", postId);
 
-        return mapToPostDto(post);
+        return mapToPostDtoResponse(post);
     }
 
     public String deletePost(Long postId) {

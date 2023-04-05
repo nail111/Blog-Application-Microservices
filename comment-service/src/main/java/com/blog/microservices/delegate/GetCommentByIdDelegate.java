@@ -1,6 +1,7 @@
 package com.blog.microservices.delegate;
 
-import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.dto.CommentDtoResponse;
+import com.blog.microservices.dto.PostDtoResponse;
 import com.blog.microservices.exception.CommentException;
 import com.blog.microservices.model.Comment;
 import com.blog.microservices.service.CommentService;
@@ -25,13 +26,19 @@ public class GetCommentByIdDelegate implements JavaDelegate {
         Long postId = (Long) execution.getVariable("postId");
         Long commentId = (Long) execution.getVariable("commentId");
 
-        PostDto postDto = commentService.getPost(postId);
+        PostDtoResponse postDtoResponse = commentService.getPost(postId);
         Comment comment = commentService.getComment(commentId);
 
-        if (postDto.getId() != comment.getPostId()) {
+        if (postDtoResponse.getId() != comment.getPostId()) {
             throw new CommentException("Comment with id: " + commentId + " doesn't belong to post with id: " + postId);
         }
 
-        execution.setVariable("comment", comment);
+        CommentDtoResponse commentDtoResponse = new CommentDtoResponse();
+        commentDtoResponse.setId(comment.getId());
+        commentDtoResponse.setName(comment.getName());
+        commentDtoResponse.setBody(comment.getBody());
+        commentDtoResponse.setEmail(comment.getEmail());
+
+        execution.setVariable("commentDtoResponse", commentDtoResponse);
     }
 }

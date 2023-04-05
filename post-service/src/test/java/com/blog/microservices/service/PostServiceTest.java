@@ -1,6 +1,8 @@
 package com.blog.microservices.service;
 
 import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.dto.PostDtoRequest;
+import com.blog.microservices.dto.PostDtoResponse;
 import com.blog.microservices.model.Post;
 import com.blog.microservices.repository.PostRepository;
 import org.junit.jupiter.api.Test;
@@ -76,10 +78,10 @@ class PostServiceTest {
         expectedPostDtoList.add(PostDto.builder().id(2L).title("Test Post 2").description("Test Description 2").content("Test Content 2").build());
 
         // act
-        List<PostDto> actualPostDtoList = postService.getAllPosts();
+        List<PostDtoResponse> actualPostDtoResponseList = postService.getAllPosts();
 
         // assert
-        assertEquals(expectedPostDtoList, actualPostDtoList);
+        assertEquals(expectedPostDtoList, actualPostDtoResponseList);
     }
 
     @Test
@@ -87,12 +89,12 @@ class PostServiceTest {
         // Arrange
         Long postId = 1L;
         Post post = new Post(postId, "Test Post", "Test Description", "Test Content");
-        PostDto postDto = new PostDto(postId, "Test Post", "Test Description", "Test Content");
+        PostDtoRequest postDtoRequest = new PostDtoRequest(postId, "Test Post", "Test Description", "Test Content");
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
         // Act
-        postService.createPost(postDto);
+        postService.createPost(postDtoRequest);
 
         // mock RabbitTemplate
         RabbitTemplate rabbitTemplate = mock(RabbitTemplate.class);
@@ -101,7 +103,7 @@ class PostServiceTest {
         // set mock RabbitTemplate on postService
 
         // There is an error with RabbitMQ
-        PostDto result = postService.getPostById(postId);
+        PostDtoResponse result = postService.getPostById(postId);
 
         // Assert
         assertEquals(post.getId(), result.getId());

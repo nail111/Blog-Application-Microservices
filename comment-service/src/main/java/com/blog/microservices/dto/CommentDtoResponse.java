@@ -8,12 +8,13 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CommentDtoResponse {
+public class CommentDtoResponse implements Serializable {
     private Long id;
 
     @NotNull

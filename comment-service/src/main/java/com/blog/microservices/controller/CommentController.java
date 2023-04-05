@@ -1,6 +1,5 @@
 package com.blog.microservices.controller;
 
-import com.blog.microservices.dto.CommentDto;
 import com.blog.microservices.dto.CommentDtoRequest;
 import com.blog.microservices.dto.CommentDtoResponse;
 import com.blog.microservices.service.CommentService;
@@ -57,9 +56,9 @@ public class CommentController {
     public ResponseEntity<?> updateComment(
             @PathVariable("postId") Long postId,
             @PathVariable("commentId") Long commentId,
-            @Valid @RequestBody CommentDto commentDto
+            @Valid @RequestBody CommentDtoRequest commentDtoRequest
     ) {
-        return ResponseEntity.ok(commentService.updateComment(postId, commentId, commentDto));
+        return ResponseEntity.ok(commentService.updateComment(postId, commentId, commentDtoRequest));
     }
 
     @DeleteMapping("/{postId}/comment/{commentId}")

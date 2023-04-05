@@ -1,6 +1,6 @@
 package com.blog.microservices.delegate;
 
-import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.dto.PostDtoResponse;
 import com.blog.microservices.service.CommentService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
@@ -22,7 +22,7 @@ public class GetPostByIdDelegate implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         Long postId = (Long) execution.getVariable("postId");
 
-        PostDto post = commentService.getPost(postId);
+        PostDtoResponse post = commentService.getPost(postId);
 
         execution.setVariable("post", post);
     }

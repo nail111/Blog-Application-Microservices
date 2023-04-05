@@ -1,6 +1,5 @@
 package com.blog.microservices.delegate;
 
-import com.blog.microservices.dto.CommentDto;
 import com.blog.microservices.dto.CommentDtoRequest;
 import com.blog.microservices.model.Comment;
 import com.blog.microservices.repository.CommentRepository;

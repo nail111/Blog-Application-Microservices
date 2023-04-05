@@ -1,6 +1,8 @@
 package com.blog.microservices.controller;
 
 import com.blog.microservices.dto.PostDto;
+import com.blog.microservices.dto.PostDtoRequest;
+import com.blog.microservices.dto.PostDtoResponse;
 import com.blog.microservices.model.Post;
 import com.blog.microservices.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,9 +70,9 @@ public class PostControllerTest {
     @Test
     public void getAllPostsTest() throws Exception {
         // Given
-        List<PostDto> posts = Arrays.asList(
-                new PostDto(1L, "title 1", "description 1", "content 1"),
-                new PostDto(2L, "title 2", "description 2", "content 2")
+        List<PostDtoResponse> posts = Arrays.asList(
+                new PostDtoResponse(1L, "title 1", "description 1", "content 1"),
+                new PostDtoResponse(2L, "title 2", "description 2", "content 2")
         );
 
         // When
@@ -92,10 +94,10 @@ public class PostControllerTest {
     public void getPostByIdTest() throws Exception {
         // Given
         Long postId = 1L;
-        PostDto postDto = new PostDto(1L, "title 1", "description 1", "content 1");
+        PostDtoResponse postDtoResponse = new PostDtoResponse(1L, "title 1", "description 1", "content 1");
 
         // When
-        when(postService.getPostById(postId)).thenReturn(postDto);
+        when(postService.getPostById(postId)).thenReturn(postDtoResponse);
 
         // Then
         mockMvc.perform(get("/api/v1/posts/post/" + postId)
@@ -110,16 +112,16 @@ public class PostControllerTest {
     public void updatePostTest() throws Exception {
         // Given
         Long postId = 1L;
-        PostDto postDto = new PostDto(1L, "title 1", "description 1", "content 1");
-        PostDto updatedPostDto = new PostDto(1L, "title 1 updated", "description 1 updated", "content 1 updated");
+        PostDtoRequest postDtoRequest = new PostDtoRequest(1L, "title 1", "description 1", "content 1");
+        PostDtoResponse postDtoResponse = new PostDtoResponse(1L, "title 1 updated", "description 1 updated", "content 1 updated");
 
         // When
-        when(postService.updatePost(postId, postDto)).thenReturn(updatedPostDto);
+        when(postService.updatePost(postId, postDtoRequest)).thenReturn(postDtoResponse);
 
         // Then
         mockMvc.perform(put("/api/v1/posts/post/" + postId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(postDto)))
+                        .content(asJsonString(postDtoRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title", is("title 1 updated")))
                 .andExpect(jsonPath("$.content", is("content 1 updated")))
